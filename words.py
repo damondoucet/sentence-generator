@@ -83,6 +83,5 @@ class WordList:
             raise ValueError
 
         cumulative = generate_cumulative(P)
-        assert(cumulative[-1] == 1)
 
         return lower_bound_index(cumulative, random.random())

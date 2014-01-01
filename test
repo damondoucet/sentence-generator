@@ -1,0 +1,3 @@
+python test_word_list.py
+python test_parser_units.py
+python test_parser.py
