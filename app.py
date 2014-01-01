@@ -10,7 +10,7 @@ def read_args():
     return parser.parse_args()
 
 args = read_args()
-text = ''.join(args.input)
+text = ''.join(args.input)[:10000]
 
 parser = markov_parser.MarkovParser()
 word_list = parser.parse_word_list(text)
