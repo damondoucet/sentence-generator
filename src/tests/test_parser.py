@@ -1,7 +1,7 @@
-import markov_parser
-from words import Word
+from ..markov_parser import MarkovParser
+from ..words import Word
 
-parser = markov_parser.MarkovParser()
+parser = MarkovParser()
 
 def test_parse_words():
     text = 'Bananas are great.\nI like bananas a lot. They\'re quite lovely. Bananas.'

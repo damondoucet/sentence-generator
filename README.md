@@ -6,6 +6,8 @@ I've included a couple sample input files taken from Project Gutenberg, such as 
 
 Unfortunately some of the Gutenberg text is a little messed up (some words concatenated for example), so the output can be strange sometimes. I also don't have any measures against reading "sentences" such as "CHAPTER XIV." 
 
+The testing infrastructure is pretty lame since this is just something I tossed together. Run ./tests.sh to run all of the tests. If anything went wrong, an assertion will fail. In the case of a successful run, there will be no output.
+
 # Examples
 
 Some example sentences:

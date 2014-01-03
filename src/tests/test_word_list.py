@@ -1,10 +1,11 @@
-import words
+from ..words import WordList
+from ..words import Word
 
 # how many times to run the probablistic tests
 N_PROB_TEST = 1000
 
 def test_random_index():
-    wl = words.WordList([])
+    wl = WordList([])
 
     for i in range(N_PROB_TEST):
         index = wl._random_index_from_probabilities([1])
@@ -22,20 +23,20 @@ def test_random_index():
 
 def test_sentence_generation():
     def test_single_word():
-        single_word = [words.Word('word', p_start=1.0, p_end=1.0, p_list=[0.0])]
-        wl = words.WordList(single_word)
+        single_word = [Word('word', p_start=1.0, p_end=1.0, p_list=[0.0])]
+        wl = WordList(single_word)
 
         for i in range(N_PROB_TEST):
             assert(wl.generate_sentence() == 'Word.')
 
     def test_guaranteed_chain():
         chain = [
-            words.Word('one', p_start=1.0, p_end=0.0, p_list=[0.0, 1.0, 0.0]),
-            words.Word('two', p_start=0.0, p_end=0.0, p_list=[0.0, 0.0, 1.0]),
-            words.Word('three', p_start=0.0, p_end=1.0, p_list=[0.0, 0.0, 0.0])
+            Word('one', p_start=1.0, p_end=0.0, p_list=[0.0, 1.0, 0.0]),
+            Word('two', p_start=0.0, p_end=0.0, p_list=[0.0, 0.0, 1.0]),
+            Word('three', p_start=0.0, p_end=1.0, p_list=[0.0, 0.0, 0.0])
         ]
 
-        wl = words.WordList(chain)
+        wl = WordList(chain)
 
         for i in range(N_PROB_TEST):
             # print i, wl.generate_sentence()

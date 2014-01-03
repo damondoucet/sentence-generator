@@ -1,6 +1,6 @@
-import markov_parser
+from ..markov_parser import MarkovParser
 
-parser = markov_parser.MarkovParser()
+parser = MarkovParser()
 
 def test_parse_sentences():
     text = 'What? Bananas! This is a sentence.Hello; my name is Bob!'

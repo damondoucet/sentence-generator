@@ -1,5 +1,5 @@
 import argparse
-import markov_parser
+from src import markov_parser
 
 def read_args():
     parser = argparse.ArgumentParser(description='Generates random sentences given sample text')
