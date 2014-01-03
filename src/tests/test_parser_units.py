@@ -1,4 +1,6 @@
 from ..markov_parser import MarkovParser
+from ..markov_parser import _counts_to_probabilities
+from ..markov_parser import _split_into_sentences
 
 parser = MarkovParser()
 
@@ -12,7 +14,7 @@ def test_parse_sentences():
         'my name is Bob'
     ]
 
-    assert(parser._split_into_sentences(text) == sentences)
+    assert(_split_into_sentences(text) == sentences)
 
 def test_clean_sentences():
     sentences = [
@@ -105,7 +107,7 @@ def test_counts_to_probs():
         4: 0.2
     }
 
-    assert(parser._counts_to_probabilities(inp) == out)
+    assert(_counts_to_probabilities(inp) == out)
 
 def main():
     test_parse_sentences()

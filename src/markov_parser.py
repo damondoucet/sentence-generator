@@ -21,13 +21,31 @@ def _flatten(list):
 def _fetch(D, x):
     return D[x] if x in D else 0
 
+def _split_into_sentences(text):
+    return [x for x in re.split(END_OF_SENTENCE_REGEX, text) if x]
+
+def _first_word(text):
+    # this could be a little faster but since words won't likely be very long
+    # it shouldn't matter much
+    return text[:text.index(' ')] if ' ' in text else text
+
+
+"""
+    Input: {key: count}
+    Output: {key: probability}
+"""
+def _counts_to_probabilities(D):
+    total = sum(D[key] for key in D)
+    return {key: float(D[key])/total for key in D}
+
+
 class MarkovParser:
     def parse_word_list(self, text):
         return words.WordList(self._parse_words(text))
 
     def _parse_words(self, text):
         sentences = self._clean_sentences(
-            self._split_into_sentences(text.lower()))
+            _split_into_sentences(text.lower()))
 
         start_probs = self._compute_start_probs(sentences)
 
@@ -40,12 +58,8 @@ class MarkovParser:
                 text=word,
                 p_start=_fetch(start_probs, word),
                 p_end=_fetch(transition_matrix[word], None),
-                p_list=self._compute_probability_list(word_list, transition_matrix[word])
-            )
+                p_list=self._compute_probability_list(word_list, transition_matrix[word]))
             for word in word_list]
-
-    def _split_into_sentences(self, text):
-        return [x for x in re.split(END_OF_SENTENCE_REGEX, text) if x]
 
     """
         Given list of words:
@@ -62,17 +76,16 @@ class MarkovParser:
         Returns {x: probability x started a sentence}
     """
     def _compute_start_probs(self, sentences):
-        return self._counts_to_probabilities(
+        return _counts_to_probabilities(
             self._compute_start_counts(sentences))
 
     """
         Returns {x: num times x started a sentence}
     """
     def _compute_start_counts(self, sentences):
-        # this repeats the sentence.split(' ') from find word pairs
-        # but in the grand scheme of things, I don't think it matters
-        first_words = [sentence.split(' ')[0] for sentence in sentences]
+        first_words = [_first_word(sentence) for sentence in sentences]
 
+        # unfortunately we have to do len(list(group)) since groups don't support len
         return {word: len(list(group)) for word, group in groupby(sorted(first_words))}
 
     """
@@ -82,26 +95,21 @@ class MarkovParser:
     def _compute_transition_matrix(self, sentences):
         transition_counts = self._compute_transition_counts(sentences)
 
-        return {key: self._counts_to_probabilities(transition_counts[key])
+        # transition_counts is a matrix of counts now
+        # we want each row to be a set of probabilities that sums to 1
+
+        return {key: _counts_to_probabilities(transition_counts[key])
             for key in transition_counts}
     
     """
-        {word: {next_word: number of times (word, next_word) occurs}}
-        including None as next_word for end of sentence
+        Returns {word: {next_word: number of times (word, next_word) occurs}}
+        next_word=None is how many times word was the last in a sentence
     """
     def _compute_transition_counts(self, sentences):
         word_pairs = _flatten([self._find_word_pairs(sentence) 
             for sentence in sentences])
 
         return self._pairs_to_dictionary(word_pairs)
-
-    """
-        Input: {key: count}
-        Output: {key: probability}
-    """
-    def _counts_to_probabilities(self, D):
-        total = sum(D[key] for key in D)
-        return {key: float(D[key])/total for key in D}
 
     """
         Remove bad characters and join any sets of multiple spaces
@@ -141,14 +149,15 @@ class MarkovParser:
         return {word: {next_word: count}}
     """
     def _pairs_to_dictionary(self, pairs):
-        # list of ((word, next_word), count)
+        # word_pair_counts = list of ((word, next_word), count)
         word_pair_counts = [(k, len(list(g))) 
             for k, g in groupby(sorted(pairs))]
 
-        # list of (word, list of ((word, next_word), count))
+        # grouped_by_first_word = list of (word, list of ((word, next_word), count))
         grouped_by_first_word = groupby(word_pair_counts, 
             lambda x: x[0][0])
 
-        # {word: {next_word: count}}
+        # returns {word: {next_word: count}}
         return {word: {pair[1]: count for pair, count in group} 
             for word, group in grouped_by_first_word}
+

@@ -1,5 +1,6 @@
 from ..words import WordList
 from ..words import Word
+from ..words import _random_index_from_probabilities
 
 # how many times to run the probablistic tests
 N_PROB_TEST = 1000
@@ -8,17 +9,17 @@ def test_random_index():
     wl = WordList([])
 
     for i in range(N_PROB_TEST):
-        index = wl._random_index_from_probabilities([1])
+        index = _random_index_from_probabilities([1])
         assert(index == 0)
 
     # the next two tests PROBABLY won't fail, if they do, just run again
     # if they're still failing, there's probably something wrong
     for i in range(N_PROB_TEST):
-        index = wl._random_index_from_probabilities([0.99999, 0.00001])
+        index = _random_index_from_probabilities([0.99999, 0.00001])
         assert(index == 0)
 
     for i in range(N_PROB_TEST):
-        index = wl._random_index_from_probabilities([0.00001, 0.99999])
+        index = _random_index_from_probabilities([0.00001, 0.99999])
         assert(index == 1)
 
 def test_sentence_generation():
