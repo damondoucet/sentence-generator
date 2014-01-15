@@ -3,17 +3,8 @@
     a WordList
 """
 
-import re
 import words
-import string
 from itertools import groupby
-
-END_OF_SENTENCE_REGEX = '! ?|\? ?|\. ?|; ?'
-SPACE_REGEX = ' +'
-
-# TODO: paren groups
-# TODO: quote groups
-# TODO: filter probable non-sentences, e.g. "CHAPTER XIV."
 
 def _flatten(list):
     return [item for sublist in list for item in sublist]
@@ -21,14 +12,10 @@ def _flatten(list):
 def _fetch(D, x):
     return D[x] if x in D else 0
 
-def _split_into_sentences(text):
-    return [x for x in re.split(END_OF_SENTENCE_REGEX, text) if x]
-
 def _first_word(text):
     # this could be a little faster but since words won't likely be very long
     # it shouldn't matter much
     return text[:text.index(' ')] if ' ' in text else text
-
 
 """
     Input: {key: count}
@@ -40,13 +27,10 @@ def _counts_to_probabilities(D):
 
 
 class MarkovParser:
-    def parse_word_list(self, text):
-        return words.WordList(self._parse_words(text))
+    def parse_word_list(self, sentences):
+        return words.WordList(self._parse_words(sentences))
 
-    def _parse_words(self, text):
-        sentences = self._clean_sentences(
-            _split_into_sentences(text.lower()))
-
+    def _parse_words(self, sentences):
         start_probs = self._compute_start_probs(sentences)
 
         transition_matrix = self._compute_transition_matrix(sentences)
@@ -110,22 +94,6 @@ class MarkovParser:
             for sentence in sentences])
 
         return self._pairs_to_dictionary(word_pairs)
-
-    """
-        Remove bad characters and join any sets of multiple spaces
-        into a single space
-    """
-    def _clean_sentences(self, sentences):
-        def remove_bad(sentence):
-            # http://stackoverflow.com/questions/265960/best-way-to-strip-punctuation-from-a-string-in-python
-            return sentence.translate(string.maketrans("", ""), 
-                string.punctuation + string.digits + '\r\n')
-
-        def trim_spaces(sentence):
-            return re.sub(SPACE_REGEX, ' ', sentence)
-
-        return [trim_spaces(remove_bad(sentence)) 
-            for sentence in sentences]
 
     """
         Example input: "bananas are wonderful"

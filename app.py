@@ -1,4 +1,5 @@
 import argparse
+from src import sentence_reader
 from src import markov_parser
 
 def read_args():
@@ -13,7 +14,8 @@ args = read_args()
 text = ''.join(args.input)[:10000]
 
 parser = markov_parser.MarkovParser()
-word_list = parser.parse_word_list(text)
+reader = sentence_reader.SentenceReader()
+word_list = parser.parse_word_list(reader.read_sentences(text))
 
 sentences = [word_list.generate_sentence() for i in range(args.sentences)]
 
